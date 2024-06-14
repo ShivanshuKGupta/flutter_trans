@@ -19,7 +19,7 @@ dependencies:
   flutter_trans: ^1.0.0
 ```
 
-2. Ensure your `pubspec.yaml` includes the `assets/translations/` folder:
+1. Ensure your `pubspec.yaml` includes the `assets/translations/` folder:
 
 ```yaml
 flutter:
@@ -27,9 +27,9 @@ flutter:
     - assets/translations/
 ```
 
-3. Run `flutter pub get` to install the package.
+1. Run `flutter pub get` to install the package.
 
-4. Follow the instructions to install the [fluttertrans CLI tool](https://pub.dev/packages/fluttertrans) for generating translation files.
+1. Follow the instructions to install the [fluttertrans CLI tool](https://pub.dev/packages/fluttertrans) for generating translation files.
 
 ## Usage
 
