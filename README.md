@@ -12,11 +12,8 @@
 
 1. Add `trans_flutter` to your `pubspec.yaml`:
 
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  trans_flutter: ^1.0.0
+```bash
+flutter pub add trans_flutter
 ```
 
 1. Ensure your `pubspec.yaml` includes the `assets/translations/` folder:
@@ -41,6 +38,7 @@ example:
 
 ```dart
 import 'package:flutter/material.dart';
+import 'package:trans_flutter/trans_flutter.dart';
 
 void main() {
   runApp(MyApp());
@@ -172,7 +170,7 @@ class SettingsPage extends StatelessWidget {
 
 ## Contributions
 
-Contributions are welcome! Feel free to open issues or submit pull requests on the [GitHub repository](https://github.com/your-repo/fluttertrans).
+Contributions are welcome! Feel free to open issues or submit pull requests on the [GitHub repository](https://github.com/ShivanshuKGupta/flutter_trans).
 
 ## License
 
