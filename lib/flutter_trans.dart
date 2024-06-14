@@ -4,33 +4,34 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+/// Extension on String to provide a translation getter
 extension TranslateString on String {
   String get tr {
     return TranslateService.translate(this);
   }
 }
 
-/// Service to translate the strings
+/// Service to handle translation of strings
 class TranslateService {
-  /// The localized strings
+  /// The localized strings map
   static Map<String, dynamic> _localizedStrings = {};
 
-  /// Returns the current locale
+  /// Getter for the current locale
   static Locale get locale => _localeNotifier.value;
 
-  /// The locale notifier
+  /// ValueNotifier to notify listeners about locale changes
   static final ValueNotifier<Locale> _localeNotifier =
       ValueNotifier(const Locale('en'));
 
-  /// Sets the locale and loads the translations
+  /// Sets the locale and loads the corresponding translations
   ///
-  /// This will also rebuild the widgets that are listening to the localeNotifier
+  /// This will also rebuild the widgets that are listening to the _localeNotifier
   static Future<void> setLocale(Locale locale) async {
     _localeNotifier.value = locale;
     await load();
   }
 
-  /// Loads the translations from the assets
+  /// Loads the translations from the assets for the current locale
   static Future<void> load() async {
     try {
       _localizedStrings = await loadJsonFromAssets(
@@ -43,18 +44,19 @@ class TranslateService {
     }
   }
 
-  /// Translates the key to the current locale
+  /// Translates the given key to the current locale
   static String translate(String key) {
     return _localizedStrings[key] ?? key;
   }
 }
 
-/// Loads the json file from the assets
+/// Loads the JSON file from the assets and decodes it
 Future<Map<String, dynamic>> loadJsonFromAssets(String filePath) async {
   String jsonString = await rootBundle.loadString(filePath);
   return jsonDecode(jsonString);
 }
 
+/// Extension on Widget to provide a translate method
 extension TranslateWidget on Widget {
   Widget translate() {
     return TranslationBuilder(
@@ -65,6 +67,7 @@ extension TranslateWidget on Widget {
   }
 }
 
+/// Widget to rebuild UI based on locale changes
 class TranslationBuilder extends StatelessWidget {
   final Widget Function(BuildContext context, Locale locale) builder;
   const TranslationBuilder({super.key, required this.builder});
