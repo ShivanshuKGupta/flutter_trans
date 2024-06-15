@@ -31,12 +31,13 @@ class TransFlutter {
 
   /// Initializes the service by loading the supported locales
   /// and fallback locale
-  Future<void> initialize() async {
+  static Future<void> initialize() async {
     try {
       final localeData =
           await loadJsonFromAssets('assets/translations/all_locales.json');
       if (localeData['fallbackLocale'] != null) {
         fallbackLocale = Locale(localeData['fallbackLocale'].toString());
+        localeNotifier.value = fallbackLocale;
       }
       supportedLocales.clear();
       supportedLocales.addAll(

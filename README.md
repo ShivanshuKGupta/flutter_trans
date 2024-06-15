@@ -6,7 +6,7 @@
 
 - **Easy Integration**: Seamlessly integrates with the `fluttertrans` CLI tool to handle translations.
 - **Dynamic Localization**: Provides utilities to dynamically change the app's locale and update the UI accordingly.
-- **Extension Methods**: Adds convenient extension methods for translating strings and widgets.
+- **Extension Methods**: Adds convenient extension methods for translating strings.
 
 ## Installation
 
@@ -16,7 +16,7 @@
 flutter pub add trans_flutter
 ```
 
-1. Ensure your `pubspec.yaml` includes the `assets/translations/` folder:
+2. Ensure your `pubspec.yaml` includes the `assets/translations/` folder:
 
 ```yaml
 flutter:
@@ -24,70 +24,55 @@ flutter:
     - assets/translations/
 ```
 
-1. Run `flutter pub get` to install the package.
+3. Create a file `assets/translations/all_locales.json` with the following content:
 
-1. Follow the instructions to install the [fluttertrans CLI tool](https://pub.dev/packages/fluttertrans) for generating translation files.
+```json
+{
+    "supportedLocales": ["en", "es"],
+    "fallbackLocale": "hi"
+}
+```
+
+4. Run `flutter pub get` to keep the assets dependencies up-to-date.
+
+5. Follow the instructions to install the [fluttertrans CLI tool](https://pub.dev/packages/fluttertrans) for generating translation files.
 
 ## Usage
 
 ### Step 1: Generate Translations
 
-Just add ```.tr``` extension to your strings in your code and run the following command to generate translations:
-
-example:
+Just add ```.tr``` extension to your strings in your code you want to translate. For example:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:trans_flutter/trans_flutter.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Translations',
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Hello World'.tr), // This will translate the text 'Hello World'
-      ),
-      body: Center(
-        child: Text('Welcome Message'.tr), // This will translate the text 'Welcome Message'
-      ),
-    );
-  }
-}
-
+Text('Hello World'.tr)
 ```
 
-Run the following command in your terminal:
+and run the following command to generate translations:
 
 ```bash
 fluttertrans
+```
+
+This will generate translation files in the `assets/translations/` folder, with the file name as the locale code (e.g., `en.json`, `es.json`, etc.). The file might look like this:
+
+```json
+{
+  "Hello World": "Hola Mundo"
+}
 ```
 
 For more information on how to use the cli, refer to the [fluttertrans CLI tool](https://pub.dev/packages/fluttertrans).
 
 ### Step 2: Load Translations in Your App
 
-#### Initialize the TranslateService
+#### Initialize TransFlutter
 
-In your `main.dart` file, set the initial locale and load the translations:
+In your `main.dart` file, initialize `TransFlutter` before running the app:
 
 ```dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await TranslateService.setLocale(const Locale('en')); // Set your initial locale
+  await TransFlutter.initialize();
   runApp(MyApp());
 }
 ```
@@ -115,9 +100,9 @@ class MyHomePage extends StatelessWidget {
 }
 ```
 
-#### Using `.translate` with MaterialApp
+#### Change runApp
 
-To ensure the entire app rebuilds when the locale changes, use the `.translate` extension method with `MaterialApp`:
+To ensure the entire app rebuilds when the locale changes, change the runApp as shown below
 
 ```dart
 import 'package:flutter/material.dart';
@@ -125,17 +110,26 @@ import 'package:trans_flutter/trans_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await TranslateService.setLocale(const Locale('en')); // Set your initial locale
-  runApp(MyApp());
+  await TransFlutter.initialize();
+
+  runApp(
+    // This builder method is called whenever the locale changes
+    TranslationBuilder(
+      builder: (context, locale) {
+        return MainApp(key: ValueKey(locale.languageCode)); // Rebuild the app when the locale changes
+      },
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Translations',
-      home: MyHomePage(),
-    ).translate();  // Add the .translate extension method
+      home: MyHomePage(title: "Flutter Demo Home Page".tr),
+    );
   }
 }
 ```
@@ -158,10 +152,85 @@ class SettingsPage extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () async {
-            await TranslateService.setLocale(const Locale('es')); // Change to Spanish
+            await TransFlutter.setLocale(const Locale('es')); // Change to Spanish
           },
           child: Text('Change to Spanish'.tr),
         ),
+      ),
+    );
+  }
+}
+```
+
+## Full Example
+
+```dart
+import 'package:trans_flutter/trans_flutter.dart';
+import 'package:flutter/material.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await TransFlutter.initialize();
+
+  print('Current Locale: ${TransFlutter.locale}');
+  print('Supported Locales: ${TransFlutter.supportedLocales}');
+  print("Fallback Locale: ${TransFlutter.fallbackLocale}");
+
+  runApp(
+    TranslationBuilder(
+      builder: (context, locale) {
+        return MainApp(key: ValueKey(locale.languageCode));
+      },
+    ),
+  );
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyHomePage(title: "TransFlutter Demo Home Page".tr),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  final String title;
+  const MyHomePage({super.key, required this.title});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Click the floating button to change the locale'.tr,
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          if (TransFlutter.locale == const Locale('en')) {
+            await TransFlutter.setLocale(const Locale('es'));
+          } else {
+            await TransFlutter.setLocale(const Locale('en'));
+          }
+        },
+        tooltip: 'Increment'.tr,
+        child: const Icon(Icons.add),
       ),
     );
   }

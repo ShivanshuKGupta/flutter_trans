@@ -1,6 +1,6 @@
 name: trans_flutter
 description: Flutter package to provide easy translation of text in your app at compile time.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/ShivanshuKGupta/flutter_trans.git
 repository: https://github.com/ShivanshuKGupta/flutter_trans.git
 
