@@ -36,7 +36,7 @@ To get started with the `trans_flutter` package, follow these steps:
        "fallbackLocale": "hi"
    }
    ```
-   - `supportedLocales` defines the languages your app will support.
+   - `supportedLocales` defines the languages your app will support. You can add more languages to this list.
    - `fallbackLocale` defines the language to use when the user's preferred language is not supported.
 
 ### Example Usage
@@ -126,3 +126,10 @@ class MyHomePage extends StatelessWidget {
 - **Translation:** Use the `.tr` extension method to automatically translate strings based on the current locale.
 - **Localization Support:** The `TranslationBuilder` widget and `AppLocalization.enable(context)` method ensure that localization is integrated throughout your app.
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue on the GitHub repository.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
