@@ -13,6 +13,24 @@ class AppLocalization {
     localeNotifier.value = locale;
   }
 
+  /// Override this method to load the translations for locales from another source
+  /// such as a database or a network call
+  ///
+  /// If set to null, then the translations will be loaded from the assets
+  ///
+  /// Output should be a map of key-value pairs where the key is the translation key
+  /// and the value is the translated string
+  ///
+  /// Example:
+  /// ```dart
+  /// {
+  ///     "Hello World": "Hola Mundo",
+  ///     "Some sample text": "Algún texto de muestra",
+  ///     "Hello World App": "Hello World App"
+  /// }
+  /// ```
+  static Future<Map<String, String?>> Function(Locale locale)? loadMethod;
+
   /// The localized strings map
   static Map<String, dynamic> _localizedStrings = {};
 
@@ -63,8 +81,10 @@ class AppLocalization {
   Future<bool> load() async {
     debugPrint('Loading translations for ${locale.languageCode}');
     try {
-      _localizedStrings = await _loadJsonFromAssets(
-          'assets/translations/${locale.languageCode}.json');
+      _localizedStrings = await (loadMethod?.call(locale) ??
+          _loadJsonFromAssets(
+            'assets/translations/${locale.languageCode}.json',
+          ));
 
       await _loadSupportedLocales();
       await _loadFallbackLocale();
