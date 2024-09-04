@@ -1,3 +1,11 @@
+## 0.0.3
+
+Added features:
+
+1. Localization now uses Flutter inbuilt's `Localizations` class to get the locale, for better integration with Flutter's localization system.
+2. Better Folder Structure
+3. Developers now can load translations from anywhere, by overriding the default load function of the `Applocalization` class.
+
 ## 0.0.2
 
 Added features:
