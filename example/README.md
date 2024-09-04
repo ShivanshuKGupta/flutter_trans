@@ -37,8 +37,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-const String name = "Raman Tank";
-
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
@@ -47,7 +45,6 @@ class MyHomePage extends StatelessWidget {
     /// To enable localization for this page, call [AppLocalization.enable]
     /// This method is required to let Flutter know that this page is localized
     AppLocalization.enable(context);
-    final newString = "${'Hello World'.tr} ${'Deep Patel'.tr}";
 
     return Scaffold(
       appBar: AppBar(
@@ -58,7 +55,6 @@ class MyHomePage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('Some sample text'.tr),
-            Text(newString),
             Wrap(
               spacing: 10,
               runSpacing: 10,
@@ -66,7 +62,7 @@ class MyHomePage extends StatelessWidget {
                 for (final locale in AppLocalization.supportedLocales)
                   ElevatedButton(
                     onPressed: () {
-                      AppLocalization.changeLocale(locale); // Change the locale dynamically
+                      AppLocalization.changeLocale(locale); // Change the locale
                     },
                     child: Text(locale.languageCode),
                   ),
