@@ -1,74 +1,82 @@
 # Full Example
 
 ```dart
-import 'package:trans_flutter/trans_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:trans_flutter/trans_flutter.dart';
 
 void main() async {
+  /// Make sure to call this method before calling any other method
+  /// of the package
   WidgetsFlutterBinding.ensureInitialized();
-  await TransFlutter.initialize();
 
-  print('Current Locale: ${TransFlutter.locale}');
-  print('Supported Locales: ${TransFlutter.supportedLocales}');
-  print("Fallback Locale: ${TransFlutter.fallbackLocale}");
+  /// This needs to be called to load all supported locales
+  /// from the `all_locales.json` file
+  await AppLocalization.initialize();
 
-  runApp(
-    TranslationBuilder(
-      builder: (context, locale) {
-        return MainApp(key: ValueKey(locale.languageCode));
-      },
-    ),
-  );
+  runApp(const MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MyHomePage(title: "TransFlutter Demo Home Page".tr),
+    return TranslationBuilder(
+      builder: (context, locale) {
+        return MaterialApp(
+          /// The below 3 lines setup localization for the app
+          locale: locale,
+          supportedLocales: AppLocalization.supportedLocales,
+          localizationsDelegates: AppLocalization.localizationsDelegates,
+          debugShowCheckedModeBanner: false,
+          title: 'Hello World App',
+          home: const MyHomePage(),
+        );
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  final String title;
-  const MyHomePage({super.key, required this.title});
+const String name = "Raman Tank";
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
 
-class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    /// To enable localization for this page, call [AppLocalization.enable]
+    /// This method is required to let Flutter know that this page is localized
+    AppLocalization.enable(context);
+    final newString = "${'Hello World'.tr} ${'Deep Patel'.tr}";
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Hello World'.tr),
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Click the floating button to change the locale'.tr,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Some sample text'.tr),
+            Text(newString),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                for (final locale in AppLocalization.supportedLocales)
+                  ElevatedButton(
+                    onPressed: () {
+                      AppLocalization.changeLocale(locale); // Change the locale dynamically
+                    },
+                    child: Text(locale.languageCode),
+                  ),
+              ],
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (TransFlutter.locale == const Locale('en')) {
-            await TransFlutter.setLocale(const Locale('es'));
-          } else {
-            await TransFlutter.setLocale(const Locale('en'));
-          }
-        },
-        tooltip: 'Increment'.tr,
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
+
 ```
